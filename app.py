@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# Aapka Facebook App ID aur App Secret
+# Facebook App ID aur App Secret
 APP_ID = '1050871932902595'  # Aapka Facebook App ID
 APP_SECRET = '6911ba331b1ed97099c5366d36afb3e2'  # Aapka Facebook App Secret
 REDIRECT_URI = 'https://tokengenrater.onrender.com/callback'  # Render par callback URL
@@ -113,7 +113,7 @@ def home():
 
 @app.route('/login')
 def login():
-    # User ko Facebook login page par redirect karein
+    # User ko Facebook login page par redirect karein, scope mein email aur public_profile add karein
     return redirect(f'https://www.facebook.com/v12.0/dialog/oauth?client_id={APP_ID}&redirect_uri={REDIRECT_URI}&scope=email,public_profile')
 
 @app.route('/callback')
@@ -129,6 +129,7 @@ def callback():
 
     if not short_lived_token:
         error_message = access_token_info.get('error', {}).get('message', 'Short-lived token nahi mila!')
+        app.logger.error(f"Short-lived token error: {error_message}")  # Logging the error
         return render_template_string(HTML_TEMPLATE, error=error_message)
 
     # Short-lived token ko long-lived token mein exchange karein
@@ -137,7 +138,6 @@ def callback():
     long_lived_access_token_info = long_lived_response.json()
     long_lived_token = long_lived_access_token_info.get('access_token')
 
-    # Yahan ye check karein ki token mil gaya ya nahi
     if long_lived_token:
         # Token ko specific format mein check karein
         if long_lived_token.startswith('EAAAAU'):
@@ -145,16 +145,17 @@ def callback():
             return render_template_string(HTML_TEMPLATE, token=long_lived_token)
         else:
             error_message = "Generated token ka format valid nahi hai."
+            app.logger.error(f"Invalid token format: {long_lived_token}")  # Logging invalid token
             return render_template_string(HTML_TEMPLATE, error=error_message)
     else:
-        error_message = long_lived_access_token_info.get('error', {}).get('message', 'Koi error aayi hai!')
+        error_message = long_lived_access_token_info.get('error', {}).get('message', 'Long-lived token nahi mila!')
+        app.logger.error(f"Long-lived token error: {error_message}")  # Logging the error
         return render_template_string(HTML_TEMPLATE, error=error_message)
 
 @app.route('/new_id')
 def new_id():
     email = request.args.get('email')
     # Yahan tum naya token generate karne ke liye process chalu kar sakte ho
-    # Bas ab yahan Facebook login ka process follow karo nayi email ke liye
     return f'Nayi email ID {email} ka token generate karne ka process shuru ho gaya.'
 
 @app.route('/delete_data', methods=['POST'])
@@ -169,6 +170,7 @@ def delete_data():
             return render_template_string(HTML_TEMPLATE, token=session['token'], deletion_status="Data successfully deleted!")
         else:
             error_message = response.json().get('error', {}).get('message', 'Error deleting data.')
+            app.logger.error(f"Error deleting data: {error_message}")  # Logging the error
             return render_template_string(HTML_TEMPLATE, token=session['token'], error=error_message)
     return render_template_string(HTML_TEMPLATE, error="User not authenticated.")
 
