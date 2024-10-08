@@ -1,7 +1,7 @@
 
+
 from flask import Flask, redirect, request, render_template_string, session
 import requests
-import time
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -9,7 +9,7 @@ app.secret_key = 'your_secret_key'
 # Aapka Facebook App ID aur App Secret
 APP_ID = '1050871932902595'  # Aapka Facebook App ID
 APP_SECRET = '6911ba331b1ed97099c5366d36afb3e2'  # Aapka Facebook App Secret
-REDIRECT_URI = 'http://localhost:5000/callback'
+REDIRECT_URI = 'https://tokengenrater.onrender.com/callback'  # Render par callback URL
 
 # HTML Template
 HTML_TEMPLATE = '''
@@ -147,4 +147,4 @@ def new_id():
     return f'Nayi email ID {email} ka token generate karne ka process shuru ho gaya hai.'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
