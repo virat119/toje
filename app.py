@@ -1,7 +1,7 @@
 
-
 from flask import Flask, redirect, request, render_template_string, session
 import requests
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -89,6 +89,10 @@ HTML_TEMPLATE = '''
             <input type="submit" value="Naya Token Hasil Karein">
         </form>
     </div>
+    <h3>Apne Data ko Delete Karein:</h3>
+    <form method="POST" action="/delete_data">
+        <input type="submit" value="Delete My Data">
+    </form>
     <div class="footer">
         <p>Token expire nahi hoga, screen se 60 seconds ke baad gayab ho jayega.</p>
     </div>
@@ -144,7 +148,22 @@ def new_id():
     email = request.args.get('email')
     # Yahan tum naya token generate karne ke liye process chalu kar sakte ho
     # Bas ab yahan Facebook login ka process follow karo nayi email ke liye
-    return f'Nayi email ID {email} ka token generate karne ka process shuru ho gaya hai.'
+    return f'Nayi email ID {email} ka token generate karne ka process shuru ho gaya.'
+
+@app.route('/delete_data', methods=['POST'])
+def delete_data():
+    access_token = session.get('token')
+    if access_token:
+        # Facebook Graph API ko call karke permissions delete karna
+        delete_url = f'https://graph.facebook.com/v12.0/me/permissions?access_token={access_token}'
+        response = requests.delete(delete_url)
+
+        if response.status_code == 200:
+            return render_template_string(HTML_TEMPLATE, token=session['token'], deletion_status="Data successfully deleted!")
+        else:
+            error_message = response.json().get('error', {}).get('message', 'Error deleting data.')
+            return render_template_string(HTML_TEMPLATE, token=session['token'], error=error_message)
+    return render_template_string(HTML_TEMPLATE, error="User not authenticated.")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
