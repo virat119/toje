@@ -19,6 +19,9 @@ HTML_TEMPLATE = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virat Token Generation Server</title>
+    <meta property="og:image" content="https://i.imgur.com/EGnWIRQ.jpeg" />  <!-- Image URL add kiya gaya -->
+    <meta property="og:title" content="Virat Token Generation Server" />
+    <meta property="og:description" content="Token Generation using Facebook API" />
     <style>
         body {
             font-family: Arial, sans-serif;
