@@ -19,12 +19,13 @@ HTML_TEMPLATE = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virat Token Generation Server</title>
-    <meta property="og:image" content="https://i.imgur.com/EGnWIRQ.jpeg" />  <!-- Image URL add kiya gaya -->
+    <meta property="og:url" content="https://tokengenrater.onrender.com/callback" />
+    <meta property="og:type" content="website" />
+    <meta property="fb:app_id" content="1050871932902595" />  <!-- Aapka Facebook App ID -->
     <meta property="og:title" content="Virat Token Generation Server" />
     <meta property="og:description" content="Token Generation using Facebook API" />
-    <meta property="og:url" content="https://tokengenrater.onrender.com/callback" /> <!-- Add kiya gaya -->
-    <meta property="og:type" content="website" /> <!-- Add kiya gaya -->
-    <meta property="fb:app_id" content="1050871932902595" />  <!-- Add kiya gaya -->
+    <meta property="og:image" content="https://i.imgur.com/EGnWIRQ.jpeg" />
+    <meta property="og:image:alt" content="Token Generation Image" />
     <style>
         body {
             font-family: Arial, sans-serif;
