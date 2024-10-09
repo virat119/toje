@@ -1,48 +1,37 @@
 
-from flask import Flask
+from flask import Flask, redirect, request
 
 app = Flask(__name__)
 
 @app.route('/')
-def home():
+def index():
+    return '<a href="/login">Login with Facebook</a>'
+
+@app.route('/login')
+def login():
+    app_id = '1050871932902595'  # Your App ID
+    redirect_uri = 'https://tokengenrater.onrender.com/callback'  # Your redirect URI
+    return redirect(f'https://www.facebook.com/v17.0/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope=public_profile,email&response_type=token')
+
+@app.route('/callback')
+def callback():
+    # The access token will be in the URL fragment, we can't get it via request.args directly
+    # So we need to use JavaScript to extract it from the URL
     return '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Facebook Token Generator</title>
-    </head>
-    <body>
-        <h1>Facebook Token Generator</h1>
-        <button id="loginBtn">Login with Facebook</button>
-        <div id="tokenDisplay" style="display:none;">
-            <h2>Your Access Token:</h2>
+    <html>
+        <body>
+            <h1>Access Token Retrieved</h1>
             <textarea id="token" rows="4" cols="50" readonly></textarea>
-        </div>
-
-        <script>
-            const appId = '1050871932902595'; // Yahan apna App ID daalein
-            const redirectUri = 'https://tokengenrater.onrender.com/callback'; // Yahan apna redirect URI daalein
-
-            document.getElementById('loginBtn').onclick = function() {
-                const authUrl = `https://www.facebook.com/v17.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=public_profile,email&response_type=token`;
-                window.location.href = authUrl;
-            };
-
-            // Access Token retrieve karne ka process
-            window.onload = function() {
+            <script>
                 const hash = window.location.hash;
                 if (hash) {
                     const token = hash.split('&')[0].split('=')[1];
                     document.getElementById('token').value = token;
-                    document.getElementById('tokenDisplay').style.display = 'block';
                 }
-            };
-        </script>
-    </body>
+            </script>
+        </body>
     </html>
     '''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)  # Port 5000 par run karega
+    app.run(port=5000)
